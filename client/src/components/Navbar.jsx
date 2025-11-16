@@ -2,7 +2,7 @@ import { useClerk, UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useAppContext } from "../context/temp";
+import { useAppContext } from "../context/AppContext";
 
 const BookIcon = () =>(
      <svg className="w-4 h-4 text-gray-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" >
