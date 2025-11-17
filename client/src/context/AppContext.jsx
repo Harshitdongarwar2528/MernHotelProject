@@ -8,7 +8,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3
 
 const AppContext =  createContext();
 
-export const  AppProvider = ({children}) => {
+export const AppProvider = ({children}) => {
 
 
   const currency = import.meta.env.VITE_CURRENCY || "$";
@@ -22,7 +22,7 @@ export const  AppProvider = ({children}) => {
 
   const fetchUser = async () => {
     try {
-      const {data} = await axios.get('/api/user', {headers: {Authorization: `Bearer ${await getToken()}`}});
+      const {data} = await axios.get('/api/users', {headers: {Authorization: `Bearer ${await getToken()}`}});
 
       if(data.success){
         setIsOwner(data.role === 'hotelOwner');

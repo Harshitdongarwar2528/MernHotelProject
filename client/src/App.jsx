@@ -12,6 +12,7 @@ import Layout from "./pages/hotelOwner/Layout";
 import ListRoom from "./pages/hotelOwner/ListRoom";
 import MyBookings from "./pages/MyBookings";
 import RoomDetails from "./pages/RoomDetails";
+
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
   const {showHotelReg} = useAppContext();
