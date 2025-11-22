@@ -1,6 +1,5 @@
-import React from 'react'
 import { Link } from "react-router-dom";
-import { assets } from '../assets/assets'
+import { assets } from '../assets/assets';
 
 const HotelCard = ({room, index}) => {
   return (
@@ -13,7 +12,8 @@ const HotelCard = ({room, index}) => {
       <div className='h-48 w-full overflow-hidden'>
         <img 
           src={room.images[0]} 
-          alt={room.hotel.name} 
+          alt={room.hotelName || room.hotel.name
+} 
           className='w-full h-full object-cover'
         />
       </div>
@@ -27,7 +27,8 @@ const HotelCard = ({room, index}) => {
       <div className='p-4 pt-5 h-48 flex flex-col justify-between'>
         <div className='flex items-start justify-between mb-2'>
           <p className='font-playfair text-xl font-medium text-gray-800 line-clamp-2 flex-1 mr-2'>
-            {room.hotel.name}
+            {room.hotelName || room.hotel.name
+}
           </p>
           <div className='flex items-center gap-1 whitespace-nowrap'>
             <img src={assets.starIconFilled} alt="star-icon" className='w-4 h-4' /> 
@@ -37,7 +38,8 @@ const HotelCard = ({room, index}) => {
 
         <div className='flex items-start gap-1 text-sm mb-4'>
           <img src={assets.locationIcon} alt="location-icon" className='w-4 h-4 mt-0.5 flex-shrink-0' /> 
-          <span className='line-clamp-2'>{room.hotel.address}</span>
+          <span className='line-clamp-2'>{room.hotelAddress || room.hotel.address
+}</span>
         </div>
 
         <div className='flex items-center justify-between mt-auto'>

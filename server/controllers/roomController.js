@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 // api to create rooms for hotels
 export const createRoom = async (req, res) => {
   try {
-    const { roomType, pricePerNight, amenities } = req.body;
+    const { roomType, pricePerNight, amenities, hotelName, hotelAddress } = req.body;
     const hotel = await Hotel.findOne({ owner: req.user._id });
 
     if (!hotel) {
@@ -22,6 +22,8 @@ export const createRoom = async (req, res) => {
     const images = await Promise.all(uploadImages);
     await Room.create({
       hotel: hotel._id,
+       hotelName,
+        hotelAddress,
       roomType,
       pricePerNight: +pricePerNight,
       amenities: JSON.parse(amenities),

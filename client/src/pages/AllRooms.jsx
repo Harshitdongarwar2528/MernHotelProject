@@ -134,14 +134,16 @@ const AllRooms = () => {
           <div className='md:w-1/2 flex flex-col gap-2'>
             <p className='text-gray-500'>{room.hotel.city}</p>
             <p onClick={() => {navigate(`/rooms/${room._id}`);scrollTo(0,0)}}  
-            className='text-gray-800 text-3xl font-playfair cursor-pointer'>{room.hotel.name}</p>
+            className='text-gray-800 text-3xl font-playfair cursor-pointer'>{room.hotelName || room.hotel.name
+}</p>
             <div className='flex items-center'>
                 <StarRating />
                 <p className='ml-2'> 200+ reviews</p>
             </div>
             <div className='flex items-center gap-1 text-gray-500 mt-2 text-sm'>
               <img src={assets.locationIcon} alt="location-icon" />
-              <span>{room.hotel.address}</span>
+              <span>{room.hotelAddress || room.hotel.address
+}</span>
             </div>
              {/* Room Amenities */}
             <div className='flex flex-wrap items-center mt-3 mb-6 gap-4'>

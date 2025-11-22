@@ -6,6 +6,8 @@ import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
 
 const AddRoom = () => {
+  const [hotelName, setHotelName] = useState('');
+  const [hotelAddress, setHotelAddress] = useState('');
 
   const {axios, getToken} = useAppContext();
 
@@ -41,6 +43,10 @@ const AddRoom = () => {
       const formData = new FormData();
       formData.append('roomType', inputs.roomType);
       formData.append('pricePerNight', inputs.pricePerNight);
+      formData.append('hotelName', hotelName);
+      formData.append("hotelAddress", hotelAddress);
+
+
       // Converting Ameneities to Array & keep only enabled amenities
      const amenities = Object.keys(inputs.amenities).filter(key => inputs.amenities[key])
       formData.append('amenities', JSON.stringify(amenities))
@@ -79,8 +85,44 @@ const AddRoom = () => {
   }
 
   return (
+
     <form onSubmit={onSubmitHandler}>
     <Title align='left' font='outfit' title='Add Room' subTitle='Fill in the details Carefully and accurate room details, pricing, and amenities, to enhance the user booking experience.' />
+          {/* Hotel Name */}
+<div className='mt-4'>
+  <p className='text-gray-800'>Hotel Name</p>
+<textarea
+  placeholder="Enter Hotel Name"
+  value={hotelName}
+  onChange={e => {
+    setHotelName(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  }}
+ className='border border-gray-300 mt-1 rounded p-2 w-full sm:w-48 resize-none overflow-hidden text-sm'
+
+  rows={1}
+  required
+/>
+
+</div>
+{/*Hotel Address */}
+<div className='mt-4'>
+  <p className='text-gray-800'>Hotel Address</p>
+ <textarea
+  placeholder="Enter Hotel Address"
+  value={hotelAddress}
+  onChange={e => {
+    setHotelAddress(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  }}
+  className='border border-gray-300 mt-1 rounded p-2 w-64
+ resize-none overflow-hidden text-sm'
+  rows={1}
+/>
+</div>
+
 
     {/* -----Upload Area for images----- */}
     <p className='text-gray-800mt-10'>Images</p>
@@ -126,10 +168,14 @@ const AddRoom = () => {
           </div>
         ))}
       </div>
+      
+
+
       <button className='bg-blue-500 hover:bg-blue-600 text-white px-8 py-2 rounded mt-8 cursor-pointer' disabled={loading}>
         { loading ? 'Adding...' : "Add Room"}
       </button>
     </form>
+  
   )
 }
 

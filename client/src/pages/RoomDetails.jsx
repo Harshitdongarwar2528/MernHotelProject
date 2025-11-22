@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { assets, facilityIcons, roomCommonData } from "../assets/assets";
 import StarRating from "../components/StarRating";
 import { useAppContext } from "../context/AppContext";
-import toast from "react-hot-toast";
 
 const RoomDetails = () => {
   const { id } = useParams();
@@ -73,7 +73,8 @@ const RoomDetails = () => {
         {/* Room Details */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
           <h1 className="text-3xl md:text-4xl font-playfair">
-            {room.hotel.name}{" "}
+            {room.hotelName || room.hotel.name
+}{" "}
             <span className="font-inter text-sm">({room.roomType})</span>
           </h1>
           <p className="text-xs font-inter py-1.5 px-3 text-white bg-orange-500 rounded-full">
@@ -88,7 +89,8 @@ const RoomDetails = () => {
         {/* Room Address */}
         <div>
           <img src={assets.locationIcon} alt="location - icon" />
-          <span>{room.hotel.address}</span>
+<span>{room.hotelAddress || room.hotel.address
+}</span>
         </div>
         {/* Room Images */}
         <div className="flex flex-col lg:flex-row mt-6 gap-6">
@@ -184,7 +186,8 @@ const RoomDetails = () => {
          <div className="flex gap-4">
           <img src={room.hotel.owner.image} alt=" Host" className="h-14 w-14 md:h-18 md:w-18 rounded-full" />
           <div>
-            <p className="text-lg md:text-xl">Hosted by {room.hotel.name}</p>
+            <p className="text-lg md:text-xl">Hosted by {room.hotelName || room.hotel.name
+}</p>
             <div className="flex items-center mt-1">
               <StarRating />
               <p className="ml-2">200+ reviews </p>
