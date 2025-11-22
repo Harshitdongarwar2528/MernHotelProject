@@ -40,11 +40,11 @@ export const createBooking = async (req, res) => {
     const { room, checkInDate, checkOutDate, guests } = req.body;
     const user = req.user._id;
     //Before booking check if room is available
-    const isAvailable = await checkAvailability({
+    const isAvailable = await checkAvailability(
       checkInDate,
       checkOutDate,
       room,
-    });
+    );
     if (!isAvailable) {
       return res.json({
         success: false,
