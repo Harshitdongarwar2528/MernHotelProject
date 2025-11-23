@@ -1,107 +1,136 @@
-import React, { useEffect, useState }from "react";
+import React, { useEffect, useState } from "react";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
 const MyBookings = () => {
-
-  const { axios, getToken, user } = useAppContext()
-
+  const { axios, getToken, user } = useAppContext();
   const [bookings, setBookings] = useState([]);
 
-  const fetchUserBookigs = async () => {
-    try{
-      const { data } = await axios.get('/api/bookings/user', {headers: { Authorization: `Bearer ${await getToken()}`}})
-      if (data.success){
-        setBookings(data.bookings)
-      }else {
-        toast.error(data.message)
+  const fetchUserBookings = async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/user", {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
 
-  useEffect(()=>{
-    if(user){
-      fetchUserBookigs()
+  useEffect(() => {
+    if (user) {
+      fetchUserBookings();
     }
-  },[user])
+  }, [user]);
 
   return (
     <div className="py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32">
       <Title
         title="My Bookings"
-        subTitle="Easily manage your past, current, and upcoming hotel reservations in one place. Plan your trips seamlessly with just a few clicks"
+        subTitle="Easily manage your past, current, and upcoming hotel reservations in one place."
         align="left"
       />
 
       <div className="max-w-6xl mt-8 w-full text-gray-800">
-        <div className="hidden md:grid md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 font-medium text-base py-3">
-          <div className="w-1/3">Hotels</div>
-          <div className="w-1/3">Date & Timings</div>
-          <div className="w-1/3">Payment</div>
+        {/* Header */}
+        <div className="hidden md:grid md:grid-cols-[3fr_2fr_1fr] border-b border-gray-300 font-medium text-base py-3">
+          <div>Hotels</div>
+          <div>Date & Timings</div>
+          <div>Payment</div>
         </div>
 
+        {/* BOOKINGS LIST */}
         {bookings.map((booking) => (
           <div
             key={booking._id}
-            className="grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t"
+            className="grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] border-b border-gray-300 py-6 first:border-t"
           >
-            {/*----- Hotel Details----- */}
+            {/* HOTEL DETAILS */}
             <div className="flex flex-col md:flex-row">
               <img
-                src={booking.room.images[0]}
+                src={
+                  booking?.room?.images?.[0] ||
+                  "https://via.placeholder.com/150"
+                }
                 alt="hotel-img"
-                className="min-md:w-44 rounded shadow object-cover"
+                className="h-40 w-full md:w-44 rounded shadow object-cover"
               />
-              <div className="flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4">
+
+              <div className="flex flex-col gap-1.5 max-md:mt-3 md:ml-4">
                 <p className="font-playfair text-2xl">
-                  {booking.hotel.name}
-                  <span className="font-inter text-sm"> ({booking.room.roomType})</span>
+                  {booking?.room?.hotelName || booking?.hotel?.name || "Hotel Deleted"}
+                  <span className="font-inter text-sm">
+                    {" "}
+                    ({booking?.room?.roomType || "Room Deleted"})
+                  </span>
                 </p>
+
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                   <img src={assets.locationIcon} alt="location-icon" />
-                  <span>{booking.hotel.address}</span>
+                  <span>{booking?.room?.hotelAddress || booking?.hotel?.address || "Address Unavailable"}</span>
                 </div>
+
                 <div className="flex items-center gap-1 text-sm text-gray-500">
                   <img src={assets.guestsIcon} alt="Guests-icon" />
-                  <span>Guests:{booking.guests}</span>
+                  <span>Guests: {booking?.guests || 1}</span>
                 </div>
-                <p className="text-base">Total: ${booking.totalPrice}</p>
+
+                <p className="text-base">
+                  Total: ${booking?.totalPrice || "N/A"}
+                </p>
               </div>
             </div>
-            {/*---- Date and Timings---- */}
-            <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">
 
+            {/* DATE & TIMINGS */}
+            <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">
               <div>
                 <p>Check-In</p>
                 <p className="text-gray-500 text-sm">
-                  {new Date(booking.checkInDate).toDateString()}
+                  {booking?.checkInDate
+                    ? new Date(booking.checkInDate).toDateString()
+                    : "N/A"}
                 </p>
               </div>
+
               <div>
                 <p>Check-Out</p>
                 <p className="text-gray-500 text-sm">
-                  {new Date(booking.checkOutDate).toDateString()}
+                  {booking?.checkOutDate
+                    ? new Date(booking.checkOutDate).toDateString()
+                    : "N/A"}
                 </p>
               </div>
             </div>
-            {/*---- Payment Status  ----*/}
+
+            {/* PAYMENT */}
             <div className="flex flex-col items-start justify-center pt-3">
               <div className="flex items-center gap-2">
-                <div className={`h-3 w-3 rounded-full ${booking.isPaid ? "bg-green-500" : "bg-red-500"}`}></div>
-                <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
-                  {booking.isPaid ? "Paid" : "Unpaid"}
+                <div
+                  className={`h-3 w-3 rounded-full ${
+                    booking?.isPaid ? "bg-green-500" : "bg-red-500"
+                  }`}
+                ></div>
+                <p
+                  className={`text-sm ${
+                    booking?.isPaid ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {booking?.isPaid ? "Paid" : "Unpaid"}
                 </p>
-
               </div>
-            {!booking.isPaid && (
-              <button className="px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer">
-                Pay Now
+
+              {!booking?.isPaid && (
+                <button className="px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer">
+                  Pay Now
                 </button>
-            )}
+              )}
             </div>
           </div>
         ))}
