@@ -19,36 +19,41 @@ const clerkWebhooks = async (req, res) => {
     //Getting Data from req body
     const { type, data } = req.body;
 
-    const userData = {
-      _id: data.id,
-      username: data.first_name + " " + data.last_name,
-      email: data.email_addresses[0].email_address,
-      image: data.profile_image_url,
-    }
-
     //Switch case for different events
     switch (type) {
-      case "user.created":{
+      case "user.created": {
+        const userData = {
+          _id: data.id,
+          username: data.first_name + " " + data.last_name,
+          email: data.email_addresses[0].email_address,
+          image: data.profile_image_url,
+        };
         await User.create(userData);
         break;
       }
 
-       case "user.updated":{
+      case "user.updated": {
+        const userData = {
+          _id: data.id,
+          username: data.first_name + " " + data.last_name,
+          email: data.email_addresses[0].email_address,
+          image: data.profile_image_url,
+        };
         await User.findByIdAndUpdate(data.id, userData);
         break;
       }
-      case "user.deleted":{
+      case "user.deleted": {
         await User.findByIdAndDelete(data.id);
         break;
       }
-         default:
+      default:
         break;
     }
-    res.json({success: true, message: "Webhook received successfully"});
-  } catch (error){
+    res.json({ success: true, message: "Webhook received successfully" });
+  } catch (error) {
     console.error("Error processing webhook:", error);
     res.json({ success: false, message: "Webhook Error: " + error.message });
   }
-}
+};
 
-export default clerkWebhooks
+export default clerkWebhooks;
