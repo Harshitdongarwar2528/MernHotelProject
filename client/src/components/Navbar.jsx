@@ -1,6 +1,6 @@
 import { useClerk, UserButton } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 
@@ -37,7 +37,8 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
   const location = useLocation();
 
-  const { user, navigate, isOwner, setShowHotelReg } = useAppContext();
+  const { user, isOwner, setShowHotelReg } = useAppContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.pathname != "/") {

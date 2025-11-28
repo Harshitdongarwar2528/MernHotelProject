@@ -12,7 +12,7 @@ export const AppProvider = ({children}) => {
 
 
   const currency = import.meta.env.VITE_CURRENCY || "$";
-  const navigate = useNavigate();
+  
   const {user} = useUser();
   const {getToken} = useAuth();
 
@@ -65,7 +65,7 @@ export const AppProvider = ({children}) => {
 
   const value ={
     currency,
-    navigate,
+    
     user,
     getToken,
     isOwner,

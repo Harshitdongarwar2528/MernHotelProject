@@ -6,63 +6,100 @@ import Room from "../models/Room.js";
 // function to check availability of room
 const checkAvailability = async (checkInDate, checkOutDate, room) => {
   try {
+    console.log("🔍 Checking availability for room:", room);
+    console.log("➡️ checkIn:", checkInDate, " checkOut:", checkOutDate);
+
     const bookings = await Booking.find({
       room,
       checkInDate: { $lte: new Date(checkOutDate) },
       checkOutDate: { $gte: new Date(checkInDate) },
     });
+
+    console.log("📦 Existing bookings:", bookings.length);
+
     const isAvailable = bookings.length === 0;
+    console.log("📌 isAvailable =>", isAvailable);
+
     return isAvailable;
   } catch (error) {
-    console.error(error.message);
+    console.error("❌ Availability Error:", error.message);
   }
 };
 
 //api to check room availability
-// POST /api/bookings/check-availability
 export const checkAvailabilityApi = async (req, res) => {
   try {
+    console.log("📩 CHECK AVAILABILITY API HIT");
     const { room, checkInDate, checkOutDate } = req.body;
+
+    console.log("➡️ Body:", req.body);
+
     const isAvailable = await checkAvailability(
       checkInDate,
       checkOutDate,
       room
     );
-    res.json({ success: true, isAvailable });
+
+    return res.json({ success: true, isAvailable });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("❌ checkAvailabilityApi ERROR:", error);
+    return res.json({ success: false, message: error.message });
   }
 };
 
 //api to create a new booking
-// POST /api/bookings/book
 export const createBooking = async (req, res) => {
+  console.log("\n🔥🔥🔥 BOOKING API HIT 🔥🔥🔥");
+  console.log("➡️ req.body:", req.body);
+  console.log("➡️ req.user:", req.user);
+
   try {
     const { room, checkInDate, checkOutDate, guests } = req.body;
-    const user = req.user._id;
+    const user = req.user?._id;
+
+    if (!user) {
+      console.log("❌ No user found in request!");
+      return res.json({ success: false, message: "User not authenticated" });
+    }
+
     //Before booking check if room is available
+    console.log("🔎 Checking availability before booking...");
     const isAvailable = await checkAvailability(
       checkInDate,
       checkOutDate,
-      room,
+      room
     );
+
+    console.log("➡️ isAvailable:", isAvailable);
+
     if (!isAvailable) {
+      console.log("❌ Room NOT AVAILABLE — sending response");
       return res.json({
         success: false,
         message: "Room is not available for the selected dates",
       });
     }
 
-    // Get room details to calculate total price
+    console.log("📦 Fetching room data...");
     const roomData = await Room.findById(room).populate("hotel");
-    let totalPrice = roomData.pricePerNight;
 
-    //Calculate total price based on number of nights
+    console.log("🏨 Found roomData:", roomData);
+
+    if (!roomData) {
+      return res.json({ success: false, message: "Room not found" });
+    }
+
+    //Calculate nights
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
     const timeDiff = checkOut.getTime() - checkIn.getTime();
     const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    totalPrice = totalPrice * nights;
+
+    const totalPrice = roomData.pricePerNight * nights;
+
+    console.log("💰 totalPrice:", totalPrice);
+
+    console.log("📝 Creating booking...");
 
     const booking = await Booking.create({
       user,
@@ -74,71 +111,88 @@ export const createBooking = async (req, res) => {
       totalPrice,
     });
 
-    const mailOptions ={
-      from: process.env.SENDER_EMAIL,
-      to: req.user.email,
-      subject:'Hotel Booking Details',
-      html: `
-        <h2>Your Booking Details</h2>
-        <p>Dear ${req.user.username},</p>
-        <p>Thank you for your booking! here are your Details:</p>
-        <ul>
-          <li><strong>Booking ID:</strong> ${booking._id}</li>
-          <li><strong>Hotel Name:</strong> ${roomData.hotelName || roomData.hotel.name}</li>
-          <li><strong>Location:</strong> ${roomData.hotelAddress || roomData.hotel.address}</li>
-          <li><strong>Date:</strong> ${booking.checkInDate.toDateString()}</li>
-          <li><strong>Booking Amount:</strong> ${process.env.Currency || '$'} ${booking.totalPrice} /night</li>
-        </ul>
-        <p>We look forward to welcoming you!</p>      
-        <p>If you need to make any changes, feel free to contact us.</p>      
-      `
+    console.log("🎉 BOOKING CREATED:", booking);
+
+    // SEND MAIL
+    try {
+      console.log("📧 Sending mail to:", req.user.email);
+
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: req.user.email,
+        subject: "Hotel Booking Details",
+        html: `
+          <h2>Your Booking Details</h2>
+          <p>Dear ${req.user.username},</p>
+          <p>Thank you for your booking! Here are your details:</p>
+          <ul>
+            <li><strong>Booking ID:</strong> ${booking._id}</li>
+            <li><strong>Hotel Name:</strong> ${
+              roomData.hotelName || roomData.hotel.name
+            }</li>
+            <li><strong>Location:</strong> ${
+              roomData.hotelAddress || roomData.hotel.address
+            }</li>
+            <li><strong>Date:</strong> ${booking.checkInDate.toDateString()}</li>
+            <li><strong>Booking Amount:</strong> ${
+              process.env.Currency || "$"
+            } ${booking.totalPrice} /night</li>
+          </ul>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log("📨 Email sent!");
+    } catch (mailError) {
+      console.log("⚠️ Mail Error (not critical):", mailError.message);
     }
 
-    await transporter.sendMail(mailOptions)
+    console.log("✨ Sending SUCCESS response...");
+    return res.json({ success: true, message: "Booking Created Successfully" });
 
-    res.json({ success: true, message: "Booking Created Successfully" });
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: error.message });
+    console.error("❌ BOOKING ERROR:", error);
+    return res.json({ success: false, message: error.message });
   }
 };
 
 //api to get all bookings of a user
-// GET /api/bookings/user
 export const getUserBookings = async (req, res) => {
   try {
-    const user = req.user._id;
     const bookings = await Booking.find({ user: req.user._id })
       .populate("room hotel")
-
       .sort({ createdAt: -1 });
-    res.json({ success: true, bookings });
+
+    return res.json({ success: true, bookings });
   } catch (error) {
-    res.json({ success: false, message: "failed to fetch bookings" });
+    return res.json({ success: false, message: "failed to fetch bookings" });
   }
 };
 
+//api to get hotel bookings
 export const getHotelBookings = async (req, res) => {
   try {
     const hotel = await Hotel.findOne({ owner: req.auth().userId });
     if (!hotel) {
       return res.json({ success: false, message: "No Hotel Found" });
     }
+
     const bookings = await Booking.find({ hotel: hotel._id })
       .populate("room hotel user")
       .sort({ createdAt: -1 });
-    //total bookings
+
     const totalBookings = bookings.length;
-    //total Revenue
     const totalRevenue = bookings.reduce(
       (acc, booking) => acc + booking.totalPrice,
       0
     );
-    res.json({
+
+    return res.json({
       success: true,
-      dashboardData: { totalBookings, totalRevenue, bookings }
+      dashboardData: { totalBookings, totalRevenue, bookings },
     });
+
   } catch (error) {
-    res.json({ success: false, message: "failed to fetch bookings" });
+    return res.json({ success: false, message: "failed to fetch bookings" });
   }
 };
