@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { assets, cities } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom";
+
 
 const Hero = () => {
-  const { navigate, getToken, axios, setSearchedCities } = useAppContext();
+  const { getToken, axios, setSearchedCities } = useAppContext();
+  const navigate = useNavigate();
+
   const [destination, setDestination] = useState("");
 
   const onSearch = async (e) => {

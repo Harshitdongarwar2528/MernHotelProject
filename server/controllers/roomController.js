@@ -36,20 +36,31 @@ export const createRoom = async (req, res) => {
 };
 
 //api to get all rooms of a hotel
+// api to get all rooms (with optional city filter)
 export const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ isAvailable: true }).populate({
-      path: "hotel",
-      populate: 
-      { 
-        path: "owner", select: "image" 
-      },
-    }).sort({ createdAt: -1 });
+    const { city } = req.query;
+
+    let filter = { isAvailable: true };
+
+    // If city is passed → filter rooms by hotel.city
+    if (city) {
+      filter["hotel.city"] = city;
+    }
+
+    const rooms = await Room.find(filter)
+      .populate({
+        path: "hotel",
+        populate: { path: "owner", select: "image" }
+      })
+      .sort({ createdAt: -1 });
+
     res.json({ success: true, rooms });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
+
 
 //api to get a all rooms for a specific hotel 
 export const getOwnerRooms = async (req, res) => {
