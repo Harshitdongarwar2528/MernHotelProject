@@ -9,6 +9,7 @@ import hotelRouter from './routes/hotelRoutes.js';
 import connectCloudinary from './configs/cloudinary.js';
 import roomRouter from './routes/roomRoute.js';
 import bookingRouter from './routes/bookingRoutes.js';
+import { stripeWebhooks } from './controllers/stripeWebHooks.js';
 
 connectDB();
 connectCloudinary();
@@ -16,6 +17,9 @@ connectCloudinary();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+//API to listen stripe webhooks
+app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 
 // ⭐ MUST BE ABOVE clerkMiddleware — so it works without auth
 app.get("/api/health", (req, res) => {
