@@ -145,15 +145,10 @@ This project was built to gain hands-on experience with:
 
 ## 🎥 Video Demos
 <details>
-<summary><strong>📁 Click to view LinkedIn video posts</strong></summary>
+<summary><strong>📁 Check video tutorial to understand fully</strong></summary>
 
 ### 🔗 **LinkedIn Video Links:**
 1. **Project Overview**: [LinkedIn Post](https://www.linkedin.com/posts/yourusername_roomify-demo-activity-123456)
-2. **Authentication Demo**: [LinkedIn Post](https://www.linkedin.com/posts/yourusername_authentication-demo-activity-123457)
-3. **Booking Flow**: [LinkedIn Post](https://www.linkedin.com/posts/yourusername_booking-flow-activity-123458)
-4. **Owner Dashboard**: [LinkedIn Post](https://www.linkedin.com/posts/yourusername_owner-dashboard-activity-123459)
-5. **Payment Integration**: [LinkedIn Post](https://www.linkedin.com/posts/yourusername_stripe-payments-activity-123460)
-
 </details>
 
 ---
@@ -161,19 +156,16 @@ This project was built to gain hands-on experience with:
 ## 📁 Project Structure
 ```
 roomify/
-├── frontend/
+├── client/
 │   ├── src/
 │   ├── public/
 │   └── package.json
-├── backend/
+├── server/
 │   ├── src/
 │   ├── package.json
 │   └── server.js
-├── video/
-│   └── README.md          # Links to LinkedIn video posts
+├── README.md          # Links to LinkedIn video posts
 ├── .gitignore
-├── README.md
-└── package.json
 ```
 
 ---
@@ -182,8 +174,8 @@ roomify/
 **Harshit**  
 Full-Stack Developer (MERN)
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/yourusername) 
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=for-the-badge&logo=github)](https://github.com/yourusername)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/harshit-dongarwar) 
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=for-the-badge&logo=github)](https://github.com/Harshitdongarwar2528)
 
 ---
 
