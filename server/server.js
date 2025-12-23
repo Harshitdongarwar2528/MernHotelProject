@@ -16,10 +16,10 @@ connectCloudinary();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-
 //API to listen stripe webhooks
 app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
+app.use(express.json());
+
 
 // ⭐ MUST BE ABOVE clerkMiddleware — so it works without auth
 app.get("/api/health", (req, res) => {
