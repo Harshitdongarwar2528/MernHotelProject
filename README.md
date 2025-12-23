@@ -176,6 +176,12 @@ Full-Stack Developer (MERN)
 
 <div align="center">
 
+⭐ Show Your Support
+If you find this project helpful, please give it a ⭐ on GitHub!
+
+<div align="center">
+Made with ❤️ using the MERN Stack
+
 ### 🌐 Connect with me
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/harshit-dongarwar)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Harshitdongarwar2528)
