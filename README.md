@@ -182,8 +182,6 @@ Full-Stack Developer (MERN)
 [![Portfolio](https://img.shields.io/badge/Portfolio-FF6B6B?style=for-the-badge&logo=google-chrome&logoColor=white)](https://yourportfolio.com)
 [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
 
-<div align="center">
-
 ⭐ Show Your Support
 If you find this project helpful, please give it a ⭐ on GitHub!
 

@@ -195,7 +195,7 @@ const RoomDetails = () => {
         <button
           onClick={bookNow}
           disabled={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-md md:px-12 py-3 mt-6 md:mt-0"
+          className="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer rounded-md md:px-12 py-3 mt-6 md:mt-0"
         >
           {isAvailable ? "Book Now" : "Check Availability"}
         </button>
