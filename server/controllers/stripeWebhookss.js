@@ -1,11 +1,13 @@
 import stripe from "stripe";
 import Booking from "../models/Booking.js";
 
-// API to handle Stripe webhooks
 export const stripeWebhooks = async (request, response) => {
-  console.log("🔥 Stripe webhook hit");
+  console.log("🔥 WEBHOOK ROUTE HIT");
 
-  // Stripe initialization
+  console.log("🧾 Headers stripe-signature:", request.headers["stripe-signature"]);
+  console.log("🧾 Body type:", typeof request.body);
+  console.log("🧾 Body is Buffer:", Buffer.isBuffer(request.body));
+
   const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
   const sig = request.headers["stripe-signature"];
   let event;
@@ -24,11 +26,10 @@ export const stripeWebhooks = async (request, response) => {
 
   console.log("📣 Event type received:", event.type);
 
-  // ✅ BEST event to listen to
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
-    console.log("✅ Checkout session completed");
+    console.log("📦 Full session object:", session);
     console.log("📦 Session metadata:", session.metadata);
 
     const bookingId = session.metadata?.bookingId;
@@ -44,14 +45,11 @@ export const stripeWebhooks = async (request, response) => {
         isPaid: true,
         paymentMethod: "Stripe",
       });
-
       console.log("✅ Booking marked as PAID in database");
     } catch (dbError) {
       console.error("❌ Database update failed:", dbError.message);
       return response.status(500).json({ error: "DB update failed" });
     }
-  } else {
-    console.log("⚠️ Unhandled event type:", event.type);
   }
 
   response.json({ received: true });
