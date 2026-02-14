@@ -16,8 +16,6 @@ const checkAvailability = async (checkInDate, checkOutDate, room) => {
       checkOutDate: { $gte: new Date(checkInDate) },
     });
 
-    console.log("📦 Existing bookings:", bookings.length);
-
     const isAvailable = bookings.length === 0;
     console.log("📌 isAvailable =>", isAvailable);
 
@@ -30,7 +28,6 @@ const checkAvailability = async (checkInDate, checkOutDate, room) => {
 //api to check room availability
 export const checkAvailabilityApi = async (req, res) => {
   try {
-    console.log("📩 CHECK AVAILABILITY API HIT");
     const { room, checkInDate, checkOutDate } = req.body;
 
     console.log("➡️ Body:", req.body);
@@ -38,19 +35,17 @@ export const checkAvailabilityApi = async (req, res) => {
     const isAvailable = await checkAvailability(
       checkInDate,
       checkOutDate,
-      room
+      room,
     );
 
     return res.json({ success: true, isAvailable });
   } catch (error) {
-    console.error("❌ checkAvailabilityApi ERROR:", error);
     return res.json({ success: false, message: error.message });
   }
 };
 
 //api to create a new booking
 export const createBooking = async (req, res) => {
-  console.log("\n🔥🔥🔥 BOOKING API HIT 🔥🔥🔥");
   console.log("➡️ req.body:", req.body);
   console.log("➡️ req.user:", req.user);
 
@@ -59,32 +54,24 @@ export const createBooking = async (req, res) => {
     const user = req.user?._id;
 
     if (!user) {
-      console.log("❌ No user found in request!");
       return res.json({ success: false, message: "User not authenticated" });
     }
 
     //Before booking check if room is available
-    console.log("🔎 Checking availability before booking...");
     const isAvailable = await checkAvailability(
       checkInDate,
       checkOutDate,
-      room
+      room,
     );
 
-    console.log("➡️ isAvailable:", isAvailable);
-
     if (!isAvailable) {
-      console.log("❌ Room NOT AVAILABLE — sending response");
       return res.json({
         success: false,
         message: "Room is not available for the selected dates",
       });
     }
 
-    console.log("📦 Fetching room data...");
     const roomData = await Room.findById(room).populate("hotel");
-
-    console.log("🏨 Found roomData:", roomData);
 
     if (!roomData) {
       return res.json({ success: false, message: "Room not found" });
@@ -98,10 +85,6 @@ export const createBooking = async (req, res) => {
 
     const totalPrice = roomData.pricePerNight * nights;
 
-    console.log("💰 totalPrice:", totalPrice);
-
-    console.log("📝 Creating booking...");
-
     const booking = await Booking.create({
       user,
       room,
@@ -111,8 +94,6 @@ export const createBooking = async (req, res) => {
       checkOutDate,
       totalPrice,
     });
-
-    console.log("🎉 BOOKING CREATED:", booking);
 
     // SEND MAIL
     try {
@@ -148,9 +129,7 @@ export const createBooking = async (req, res) => {
       console.log("⚠️ Mail Error (not critical):", mailError.message);
     }
 
-    console.log("✨ Sending SUCCESS response...");
     return res.json({ success: true, message: "Booking Created Successfully" });
-
   } catch (error) {
     console.error("❌ BOOKING ERROR:", error);
     return res.json({ success: false, message: error.message });
@@ -185,53 +164,52 @@ export const getHotelBookings = async (req, res) => {
     const totalBookings = bookings.length;
     const totalRevenue = bookings.reduce(
       (acc, booking) => acc + booking.totalPrice,
-      0
+      0,
     );
 
     return res.json({
       success: true,
       dashboardData: { totalBookings, totalRevenue, bookings },
     });
-
   } catch (error) {
     return res.json({ success: false, message: "failed to fetch bookings" });
   }
 };
 
 export const stripePayment = async (req, res) => {
-  try{
-    const {bookingId} = req.body;
+  try {
+    const { bookingId } = req.body;
     const booking = await Booking.findById(bookingId);
     const roomData = await Room.findById(booking.room).populate("hotel");
     const totalPrice = booking.totalPrice;
-    const {origin}= req.headers;
+    const { origin } = req.headers;
 
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const line_items = [
       {
         price_data: {
-          currency: 'aud',
+          currency: "aud",
           product_data: {
             name: roomData.hotel.name,
           },
           unit_amount: totalPrice * 100,
         },
         quantity: 1,
-      }
-    ]
+      },
+    ];
     // create checkout session
     const session = await stripeInstance.checkout.sessions.create({
-       line_items,
-        mode: 'payment',
-        success_url: `${origin}/loader/my-bookings`,
-        cancel_url: `${origin}/my-bookings`,
-        metadata: {
-          bookingId,
-        }
-    })
-    res.json({success:true, url: session.url});
-  } catch(error){
-    res.json({success:false, message: "Payment failed"});
+      line_items,
+      mode: "payment",
+      success_url: `${origin}/loader/my-bookings`,
+      cancel_url: `${origin}/my-bookings`,
+      metadata: {
+        bookingId,
+      },
+    });
+    res.json({ success: true, url: session.url });
+  } catch (error) {
+    res.json({ success: false, message: "Payment failed" });
   }
-}
+};
